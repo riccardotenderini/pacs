@@ -1,0 +1,4 @@
+Challenge1:
+I want a set containing the edges of the mesh without repetition (31 is the same as 13).
+The mesh is a vector of triangles. Each triangle is identified by three points, so I need to build the edges from this points. Having all the edges in a vector I can fill the set of the edges without repetition.
+
