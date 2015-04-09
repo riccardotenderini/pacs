@@ -1,3 +1,6 @@
+// Use header guard!
+#ifndef HH_MESH_HHP
+#define HH_MESH_HHP
 #include <utility>
 #include <algorithm>
 #include <tuple>
@@ -8,11 +11,13 @@ using namespace std;
 // Creo Edge
 struct Edge
 {
-	Edge(const unsigned & a, const unsigned & b)
-	{
-		this -> pointId.first = a;
-		this -> pointId.second = b;
-	}
+  Edge(const unsigned & a, const unsigned & b):
+    // Better to initialize in the initialization list
+    pointId{a,b}{}
+	//	{
+	//this -> pointId.first = a;
+	//	this -> pointId.second = b;
+	//}
 	std::pair<unsigned, unsigned> pointId;
 };
 
@@ -40,12 +45,13 @@ struct noOrient{
 // Creo Triangle
 struct Triangle
 {
-	Triangle(const unsigned & a, const unsigned & b, const unsigned & c)
-	{
-		get<0>(this->pointId) = a;
-		get<1>(this->pointId) = b;
-		get<2>(this->pointId) = c;
-	}
+  Triangle(const unsigned & a, const unsigned & b, const unsigned & c):
+    pointId{a,b,c} {}
+  //	{
+  //	get<0>(this->pointId) = a;
+  //		get<1>(this->pointId) = b;
+  //		get<2>(this->pointId) = c;
+  //	}
 	std::tuple<unsigned, unsigned, unsigned> pointId;
 };
 
@@ -55,6 +61,8 @@ struct yesOrientTr{
 		return a.pointId < b.pointId; // sfrutto il confronto già implementato per tuple
 	}	
 };
+
+// E noOrient??????
 
 /*
 void TriangleOrientation(Triangle & T){
@@ -71,13 +79,14 @@ void TriangleOrientation(Triangle & T){
 // Creo Tetra
 struct Tetra
 {
-	Tetra(const unsigned & a, const unsigned & b, const unsigned & c, const unsigned & d)
-	{
-		get<0>(this->pointId) = a;
-		get<1>(this->pointId) = b;
-		get<2>(this->pointId) = c;
-		get<3>(this->pointId) = d;
-	}
+  Tetra(const unsigned & a, const unsigned & b, const unsigned & c, const unsigned & d):
+    pointId{a,b,c,d} {}
+  //	{
+  //		get<0>(this->pointId) = a;
+  //		get<1>(this->pointId) = b;
+  //		get<2>(this->pointId) = c;
+  //		get<3>(this->pointId) = d;
+  //	}
 	std::tuple<unsigned, unsigned, unsigned,unsigned> pointId;
 };
 
@@ -87,4 +96,4 @@ struct yesOrientTetra{
 		return a.pointId < b.pointId; // sfrutto il confronto già implementato per tuple
 	}	
 };
-
+#endif

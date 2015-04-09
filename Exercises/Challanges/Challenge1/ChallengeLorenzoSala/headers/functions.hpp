@@ -1,3 +1,6 @@
+// Header guard missing
+#ifndef HH_FUNCTiONS_HHP
+#define HH_FUNCTiONS_HHP
 #include "mesh.hpp"
 #include <vector>
 #include <set>
@@ -5,6 +8,7 @@
 
 using namespace std;
 
+// NON SI METTONO DEFINIZINI DI FUNZIONE IN UN HEADER FILE
 // Funzione che trova tutti i lati con orientatamento
 set<Edge,yesOrient> findedgeO(const vector<Triangle> & v){
 	
@@ -145,6 +149,7 @@ set<Triangle,yesOrientTr> findboundaryTetra(const vector<Tetra> & v){
 		it = result.find(Triangle(get<2>(i.pointId),get<1>(i.pointId),get<0>(i.pointId)));
 		if(it != result.end()){
 			result.erase(it);
+			// perche non mette un break!!
 			it = result.end();
 		}		
 		it = result.find(Triangle(get<2>(i.pointId),get<1>(i.pointId),get<0>(i.pointId)));
@@ -170,7 +175,7 @@ set<Triangle,yesOrientTr> findboundaryTetra(const vector<Tetra> & v){
 	}
 	return result;
 }
-	
+#endif	
 
 
 
