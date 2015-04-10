@@ -23,6 +23,8 @@ std::pair<std::set<Edge,latimesh>::iterator,bool> ret;
 
 for(auto j=0;j<meshEdges.size();j++){
 
+  // Corretto, ma si poteva fare
+  // auto ret=Edges.insert(meshEdges[j]);
 	ret=Edges.insert(meshEdges[j]);
 //insert returns a pair of the type described in the ret declaration 
 
