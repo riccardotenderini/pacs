@@ -1,0 +1,52 @@
+Good (and correct) the idea of separating header and source files
+Good using the initializers in the constructors
+Good the idea of a method to extract the Edges. But why not returning the array? 
+
+	std::array<Edge,3> void ExtractEdges() const;
+
+The efficiency gain by passing an fixed sized array by reference is really
+small because of return value optimization and move semantic. In particular if the method is inlined!
+Anyway, it is ok!.
+
+
+ 
+
+Errors:
+
+1- Header files must contain an header guard
+
+#ifndef HH_Edge_HPP
+#define HH_Edge_HPP
+// Content here
+#endif
+
+
+Minor errors/imprecisions
+
+2- Do not include in a header file things that are not needed! IN edge.hpp there is no need of <algorithm> <vector> etc etc.....
+
+3- Some methods (for instance the constructor) could have been put in-class (or inlined) for efficiency. They are small and the compiler could optimize them by inlining.
+
+4- Instead of a method print() you could have overloaded the streaming
+operator (but using a method for printing is also fine). Good the idea
+of using a generic stream and overloading the one for the standard output. But it
+could have been done using a default argument:
+
+void Edge::print(std::ostream & os=std::cout);
+`
+
+5- Instead of
+
+	std::pair<std::set<Edge>::iterator,bool> p;
+	for (auto i : v) {
+		i.ExtractEdges(aux);
+
+
+you could have set
+
+	for (auto i : v) {
+		.....
+		auto p = s.insert(j)
+
+
+
