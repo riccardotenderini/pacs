@@ -1,0 +1,39 @@
+- Good using header files with header guards
+- Good initialization of class data using member initializer list
+- Good the use of modulo operator.
+
+
+
+Errors
+
+The semantic of the comparison operator is wrong. In lexixografic comparison of
+collections of two entities you compare the second only if the first are equal.
+
+If you want to unse only the less-than operator:
+
+bool compEdges::operator()(Edge const& a, Edge const& b) const{
+  if(!std::min(a[0],a[1])<std::min(b[0],b[1])
+  && 
+  !std::min(b[0],b[1])<std::min(a[0],a[1])
+)
+    return std::max(a[0],a[1])<std::max(b[0],b[1]);
+  else 
+  return std::min(a[0],a[1])<std::min(b[0],b[1]);
+}
+
+Of course it can be optimised by precomputing some quantities. I
+wanted just to show the semantic of lexicographic comparison and how
+it can be obtained without using the equality operator but just the
+less-than operator.
+
+Minor note:
+
+C++11 saves your typing
+
+      std::pair<std::set<Triangle,compTriangles>::iterator,bool> inserted(bdryFaces.insert(Triangle(tetra[i],tetra[(i+1)%4],tetra[(i+2)%4])));
+
+can be written
+
+      auto inserted(bdryFaces.insert(Triangle(tetra[i],tetra[(i+1)%4],tetra[(i+2)%4])));
+
+

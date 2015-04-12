@@ -1,0 +1,22 @@
+- Good use header and source files., with header guard (for the header file!)
+
+
+
+Errors
+
+You do not put header guards in cpp files. No reasons to do that.
+
+
+Minor notes.
+
+- Do not include headers you do not need! algorithm is not needed in edge.hpp for instance.
+
+- Better use member initializer list when constructing:
+
+struct Edge{
+	unsigned first;
+	unsigned second;
+	Edge(const unsigned &a,const unsigned &b):first(a),second(b){}
+};
+
+Create a target clean in the Makefile. It helps!
