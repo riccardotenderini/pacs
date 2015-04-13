@@ -13,7 +13,7 @@
 # The only user defined variable that must be set in this file is
 # the one indicating where Makefile.h resides
 
-MAKEFILEH_DIR=../../
+MAKEFILEH_DIR=../../..
 #
 include $(MAKEFILEH_DIR)/Makefile.inc
 #
@@ -45,11 +45,11 @@ EXEC=$(exe_sources:.cpp=)
 all: $(DEPEND) $(EXEC)
 
 clean:
-	$(RM) -f $(EXEC) $(OBJS)
+	-\rm -f $(EXEC) $(OBJS)
 
 distclean:
 	$(MAKE) clean
-	$(RM) -r -f ./doc
+	$(RM) -f ./doc $(DEPEND)
 	$(RM) *.out *.bak *~
 
 doc:
@@ -59,10 +59,11 @@ $(EXEC): $(OBJS)
 
 $(OBJS): $(SRCS)
 
-$(DEPEND): $(SRCS) $(HEADERS)
-	g++ $(CPPFLAGS) -MM $(SRCS) -MF $(DEPEND)
-
-
+$(DEPEND): $(SRCS)
+	-\rm $(DEPEND)
+	for f in $(SRCS); do \
+	$(CXX) $(STDFLAGS) $(CPPFLAGS) -MM $$f >> $(DEPEND); \
+	done
 
 -include $(DEPEND)
 
