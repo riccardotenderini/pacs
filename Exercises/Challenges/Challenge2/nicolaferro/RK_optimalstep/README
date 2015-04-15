@@ -1,0 +1,11 @@
+Function for Runge Kutta 45 or 23 adaptive time integration. The adaptation is carried out exploiting the estimate for the optimal time step provided in literature (e.g. http://pauli.uni-muenster.de/tp/fileadmin/lehre/NumMethoden/SoSe10/Skript/RKM.pdf).
+
+For scalar ODE of the form dy/dt = f(y,t)
+
+make static makes the static library
+make dynamic the shared libary
+make installs installs in PACS_ROOT/include and PACS_ROOT/lib
+
+make will also crete the executable.
+
+bash plot.sh uses gnuplot to shot the result
