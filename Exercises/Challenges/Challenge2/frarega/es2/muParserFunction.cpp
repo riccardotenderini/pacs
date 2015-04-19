@@ -3,8 +3,6 @@
 
 muParserFunction::muParserFunction(const std::string & expr){ 
 	this->parser.SetExpr(expr);
-	//this->parser.DefineVar("t",&M_t);
-	//this->parser.DefineVar("y",&M_y);
 }
 
 muParserFunction::~muParserFunction(){
@@ -16,10 +14,6 @@ double muParserFunction::operator()(double const &t, double const &y){
 	this->M_y=y; 
 	this->parser.DefineVar("t",&M_t);
 	this->parser.DefineVar("y",&M_y);
-	/*std::cout<<t<<std::endl<<y<<std::endl;
-	for (auto var : this->parser.GetVar()){
-		std::cout<<var.first<<"\t"<<*var.second<<std::endl;
-	}*/
 	return this->parser.Eval();
 }
 
