@@ -38,7 +38,7 @@ int main(int argc, char** argv)
   double c2=1./64.;
   int status;
 
-  if      (k_met==1) {h_init=0.2; errorDesired=1.e-7; c1=1.0; c2= 1./64; maxSteps=1.e6;}
+  if      (k_met==1) {h_init=0.2; errorDesired=1.e-7; c1=1.0; c2= 1./16; maxSteps=1.e6;}
   else if (k_met==2) {h_init=0.2; errorDesired=1.e-7; c1=1.0; c2= 1./64; maxSteps=1.e4;}
   auto result= 
     rk(methods[k_met-1],fun,t0,T,y0,h_init,(T-t0)/4.,errorDesired,status,maxSteps,c1,c2);
