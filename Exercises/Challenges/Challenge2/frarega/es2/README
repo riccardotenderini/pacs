@@ -1,0 +1,20 @@
+Function for Runge Kutta adaptive time integration.
+For scalar ODE of the form dy/dt = f(y,t), on the time domain [0 100].
+
+make will create the executable.
+make clean will clean executable and objects.
+make distclean will clean result.dat too.
+
+./main will start the program, and will ask the user to choose the step method between two schemes.
+Otherwise, you can specify the desired step function by command line:
+./main rk23 (or RK23)
+./main rk45 (or RK45)
+
+The program asks the user to type the righ-hand function f(y,t) and the initial value y(0).
+Results are stored in result.dat.
+After the computation is done, you are allowed to type the exact solution, if you know its expression, so that the error can be evaluated.
+
+bash plot.sh uses gnuplot to shot the result
+
+NOTES ON INSTALLATION:
+The program uses the muparser library. If the library is installed in your pacs/Examples/lib directory, you may have to add this path to the environment variable LD_LIBRARY_PATH. (e.g. LD_LIBRARY_PATH+=";/home/pacs_student/Documents/pacs/Examples/lib")
