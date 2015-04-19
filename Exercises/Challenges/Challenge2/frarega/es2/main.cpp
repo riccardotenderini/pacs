@@ -4,6 +4,7 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+#include "GetPot"
 #include "rk.hpp"
 #include "muParser.h"
 #include "muParserFunction.hpp"
@@ -18,38 +19,73 @@ int main(int argc, char** argv)
 {
   using namespace std;
   using namespace ODE;
-
   double t0=0;
   double y0=1;
   double T=100;
   double h_init=0.2;
   double errorDesired=1.e-7;
-  std::size_t maxSteps=10000;
-  double c1=1.0;
-  double c2=1./64.;
+  int maxSteps=-1; //deafult values depends on the method
+  double c1=1;
+  double c2=-1; //deafult values depends on the method  
+  int k_met=-1; //NO default value
   int status;
-  std::string expr;
+  std::string expr(""); //NO default value  
+  std::string y_ex(""); //NO default value
+  std::string s_met("");
 
-  cout<< "Type the right-hand of the differantial equation dy/dt=f(t,y)"<<std::endl;
-  cout<< "(the only allowed variables are \"t\" and \"y\")"<<std::endl;
-  while(expr.size()==0) // to filter out extra carriage returns
-  {
-	getline(cin,expr);
-	if(!cin.good()) throwInputException();
+  GetPot cl (argc,argv);
+  if (cl.search(2,"-f","--file"))
+  {	
+	//default file: "options"
+	GetPot file(cl.next("options").c_str());
+
+	t0=file("equation/t0",t0);
+	y0=file("equation/y0",y0);
+	T=file("equation/T",T);
+	h_init=file("solver/h_init",h_init);
+	errorDesired=file("solver/errorDesired",errorDesired);
+	maxSteps=file("solver/maxSteps",maxSteps);
+	c1=file("solver/c1",c1);
+	c2=file("solver/c2",c2);
+	expr=file("equation/fun","");
+	y_ex=file("equation/yex","");
+	string s_met=file("solver/method","");
   }
-  if(!cin.good()) throwInputException();
+  else
+  {
+	t0=cl("t0",t0);
+	y0=cl("y0",y0);
+	T=cl("T",T);
+	h_init=cl("h_init",h_init);
+	errorDesired=cl("errorDesired",errorDesired);
+	maxSteps=cl("maxSteps",maxSteps);
+	c1=cl("c1",c1);
+	c2=cl("c2",c2);
+	expr=cl("fun","");
+	y_ex=cl("yex","");
+	string s_met=cl("solver/method","");
+  }
+
+  if      (s_met=="rk45" || s_met=="RK45") k_met=1;	
+  else if (s_met=="rk23" || s_met=="RK23") k_met=2;
+
+  if (expr.empty())
+  {
+	  cout<< "Type the right-hand of the differantial equation dy/dt=f(t,y)"<<std::endl;
+	  cout<< "(the only allowed variables are \"t\" and \"y\")"<<std::endl;
+	  while(expr.size()==0) // to filter out extra carriage returns
+	  {
+		getline(cin,expr);
+		if(!cin.good()) throwInputException();
+	  }
+	  if(!cin.good()) throwInputException();
+  }
   muParserFunction fun(expr);
   
-  cout<<"Type inizial value y(0):"<<endl;
-  cin>>y0;
-
   std::vector<step_function> methods;
   methods.push_back(rk23_step);
   methods.push_back(rk45_step);
-  int k_met=1;
-  if      (argc>1 && (strcmp(argv[1],"rk23")==0 || strcmp(argv[1],"RK23")==0)) k_met=1;
-  else if (argc>1 && (strcmp(argv[1],"rk45")==0 || strcmp(argv[1],"RK45")==0)) k_met=2;
-  else
+  if (k_met<0)
   {
 	bool ok=false;
 	while (!ok)
@@ -63,12 +99,31 @@ int main(int argc, char** argv)
 	}
   }
 
+  //if not specified by the user, I set default values according to the chosen method
+  if (c2<0 && k_met==1) c2=1./16;
+  if (c2<0 && k_met==2) c2=1./64;
+  if (maxSteps<0 && k_met==1) maxSteps=1.e6;
+  if (maxSteps<0 && k_met==2) maxSteps=1.e4;
+
+  if (cl.search(2,"-p","--print-options"))
+  {
+	cout<<"********OPTIONS********"<<endl;
+	cout<<"Equation:"<<endl;
+	cout<<"\tf(t,y)="<<expr<<endl;
+	cout<<"\ty(0)="<<y0<<endl;
+	cout<<"\tt0="<<t0<<endl;
+	cout<<"\tT="<<T<<endl;
+	cout<<"Solver:"<<endl;
+	cout<<"\tMethod: "<<(k_met==1?"Runge-Kutta23":"Runge-Kutta45")<<endl;
+	cout<<"\th_init="<<h_init<<endl;
+	cout<<"\terrorDesired="<<errorDesired<<endl;
+	cout<<"\tmaxSteps="<<maxSteps<<endl;
+	cout<<"\c2="<<c2<<endl;
+	cout<<"***********************"<<endl;
+  }
+  
   cout << "Now I will solve the equation:"<<std::endl<<"\t\tdy/dt="<<expr<<std::endl;
   cout << "\t\ty(0)="<<y0<<endl<<endl;
-
-
-  if      (k_met==1) {h_init=0.2; errorDesired=1.e-7; c1=1.0; c2= 1./16; maxSteps=1.e6;}
-  else if (k_met==2) {h_init=0.2; errorDesired=1.e-7; c1=1.0; c2= 1./64; maxSteps=1.e4;}
 
   try
   {
@@ -80,16 +135,18 @@ int main(int argc, char** argv)
 	file.close();
 
 	cout<<"Computation terminated successfully!"<<endl;
-	cout<<"If you now the exact solution, type it, otherwise type \"quit\""<<endl;
-	
-	std::string y_ex;
-	while(y_ex.size()==0) // to filter out extra carriage returns
+	if (y_ex.empty())
 	{
-		getline(cin,y_ex);
+		cout<<"If you now the exact solution, type it, otherwise type \"quit\""<<endl;	
+	
+		while(y_ex.size()==0) // to filter out extra carriage returns
+		{
+			getline(cin,y_ex);
+			if(!cin.good()) throwInputException();
+		}
 		if(!cin.good()) throwInputException();
+		if (y_ex=="quit") exit(0);
 	}
-	if(!cin.good()) throwInputException();
-	if (y_ex=="quit") exit(0);
 	mu::Parser parser;
 	parser.SetExpr(y_ex);
 	double max_error(0);
