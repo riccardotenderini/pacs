@@ -76,6 +76,7 @@ namespace ODE
     @param final_error Desired error at t=T
     @param status: 0=Ok 1=initial step too small; 2 number of steps exceeded; 
                    3 hmin reached, cannot guarantee error
+    @param maxSteps maximum number of steps
     @param c1 parameter for decreasing the time step
     @param c2 parameter for increasing the time step. I need to have a sufficient decrease of the local error to allow time step coarsening
     @return the solution as pairs t,y

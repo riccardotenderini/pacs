@@ -4,6 +4,7 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+#include <cstring>
 #include "GetPot"
 #include "rk.hpp"
 #include "muParser.h"
@@ -37,7 +38,7 @@ int main(int argc, char** argv)
   if (cl.search(2,"-f","--file"))
   {	
 	//default file: "options"
-	GetPot file(cl.next("options").c_str());
+	GetPot file(cl.next("options.pot").c_str());
 
 	t0=file("equation/t0",t0);
 	y0=file("equation/y0",y0);
@@ -48,8 +49,8 @@ int main(int argc, char** argv)
 	c1=file("solver/c1",c1);
 	c2=file("solver/c2",c2);
 	expr=file("equation/fun","");
-	y_ex=file("equation/yex","");
-	string s_met=file("solver/method","");
+	y_ex=file("equation/sol","");
+	s_met=file("solver/method","");
   }
   else
   {
@@ -62,12 +63,13 @@ int main(int argc, char** argv)
 	c1=cl("c1",c1);
 	c2=cl("c2",c2);
 	expr=cl("fun","");
-	y_ex=cl("yex","");
-	string s_met=cl("solver/method","");
+	y_ex=cl("sol","");
+	s_met=cl("method","");
+	cout<<s_met;
   }
 
-  if      (s_met=="rk45" || s_met=="RK45") k_met=1;	
-  else if (s_met=="rk23" || s_met=="RK23") k_met=2;
+  if      (strcmp(s_met.c_str(),"rk23")==0 || strcmp(s_met.c_str(),"RK23")==0) k_met=1;	
+  else if (strcmp(s_met.c_str(),"rk45")==0 || strcmp(s_met.c_str(),"RK45")==0) k_met=2;
 
   if (expr.empty())
   {
@@ -118,7 +120,8 @@ int main(int argc, char** argv)
 	cout<<"\th_init="<<h_init<<endl;
 	cout<<"\terrorDesired="<<errorDesired<<endl;
 	cout<<"\tmaxSteps="<<maxSteps<<endl;
-	cout<<"\c2="<<c2<<endl;
+	cout<<"\tc1="<<c1<<endl;
+	cout<<"\tc2="<<c2<<endl;
 	cout<<"***********************"<<endl;
   }
   
@@ -134,7 +137,7 @@ int main(int argc, char** argv)
 		file<<v.first<<" "<<v.second<<std::endl;
 	file.close();
 
-	cout<<"Computation terminated successfully!"<<endl;
+	cout<<"Computation completed successfully!"<<endl;
 	if (y_ex.empty())
 	{
 		cout<<"If you now the exact solution, type it, otherwise type \"quit\""<<endl;	
