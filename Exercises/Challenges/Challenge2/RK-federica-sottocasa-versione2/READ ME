@@ -1,0 +1,21 @@
+Function for Runge Kutta 45 and 23 adaptive time integration.
+
+For scalar ODE of the form dy/dt = f(y,t)
+Here I've just two methods, so I fixed the options in the main, but I could change it and pass them from the command line at run time too. 
+The interesting things are that I pass all the options and also the stepping method as the arguments of the function rk. Passing everything by arguments of rk function I have a more general code.
+In the previous version I decided to pass the rk step function by a pointer to the function step that I want to use, but now looking at the example of the non linear system I've had the idea to define a new type,the funType that is the type of the step function.
+
+For RK23 I had to increase a lot the number of iteration and to change c2 according to the order of the method.
+
+I just copied the Makefile and Makefile.inc to allow to solve the callenge. 
+
+make static makes the static library
+make dynamic the shared libary
+
+make will also crete the executable.
+
+bash plot.sh uses gnuplot to shot the result
+
+In this version I pass from the command line which method I want to use, for example:
+
+./main_rk RK45 or ./main_rk RK23
