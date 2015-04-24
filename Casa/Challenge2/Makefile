@@ -13,7 +13,7 @@
 # The only user defined variable that must be set in this file is
 # the one indicating where Makefile.h resides
 
-MAKEFILEH_DIR = ../../../../Examples/
+MAKEFILEH_DIR=../../
 #
 # You may have an include file also in the current directory
 #
@@ -25,15 +25,14 @@ export DEBUG=yes
 #CC=$(CXX)# I am not using C compiler here, simpler to set it equal to c++
 STANDARD=c++11
 #
-LIBNAME = rk45
-DYNAMIC_LIBFILE=lib$(LIBNAME).so 
+LIBNAME=rk45
+DYNAMIC_LIBFILE=lib$(LIBNAME).so
 STATIC_LIBFILE=lib$(LIBNAME).a
 
 include $(MAKEFILEH_DIR)/Makefile.inc
 LIBRARIES+=-L. -l$(LIBNAME)
-LIBRARIES+=-L./home/pacs_student/Desktop/pacs/Extras/muParser/lib
 LDLIBS+=$(LIBRARIES)
-INCLUDES=-I. 
+INCLUDES=-I. -I(
 
 ifeq ($(LIBTYPE),DYNAMIC)
  CXXFLAGS+=-fPIC
@@ -125,7 +124,7 @@ doc:
 	doxygen $(DOXYFILE)
 
 $(EXEC): $(LIBRARY) $(EXEC_OBJS) $(OTHER_OBJS)
-	$(CXX) $(EXEC_OBJS) $(OTHER_OBJS) $(LDFLAGS) $(LDLIBS) -o $(EXEC)
+#	$(CXX) $(EXEC_OBJS) $(OTHER_OBJS) $(LDFLAGS) $(LDLIBS) -o $(EXEC)
 
 #$(EXEC_OBJS): $(EXEC_SRCS)
 #	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(EXEC_CPPFLAGS) -c $?

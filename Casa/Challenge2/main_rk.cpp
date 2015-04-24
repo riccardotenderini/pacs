@@ -1,11 +1,8 @@
 #include "rk23.hpp"
 #include "rk45.hpp"
-#include "muParserInterface.hpp"
-// #include "muParserInterface.cpp"
 #include <iostream>
 #include <fstream>
 #include <cmath>
-#include <string>
 
 std::vector<std::pair<double,double>> 
     rk(std::function<double (double const &, double const &)> const & fun,
@@ -24,30 +21,6 @@ int main()
 {
   using namespace std;
   using namespace ODE;
-  
-  // using namespace MuParserInterface;
-
-  string expr;
-  // muParserInterface p;
-
-  
-  double x,y,t;	
-  while (true)
-    {
-    cout<< "Give me an expression possibly contaning variables t, x and y"<<std::endl;
-    cout<< "(type quit to finish)"<<std::endl;
-    while(expr.size()==0) // to filter out extra carriage returns
-      {
-	getline(cin,expr);
-	if(!cin.good()) break;//printAndExit();
-      }
-    if(!cin.good()) break;//printAndExit();
-    cout<<"You have typed:"<<expr<<endl;
-    if(expr=="quit") exit(0);
-  }
-  
-  // p.set_expression(expr);
-  
   auto fun = [](double const & t, double const & y){return -10*y;};
   // auto fun = [](double const & t, double const & y){return -std::sin(t);};
   double t0=0;
