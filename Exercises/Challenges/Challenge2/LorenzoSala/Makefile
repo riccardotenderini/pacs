@@ -102,9 +102,9 @@ depend: $(DEPEND)
 targets: library exec
 
 static:
-	$(MAKE) targets
+	$(MAKE) targets LIBTYPE=STATIC
 dynamic:
-	$(MAKE) targets
+	$(MAKE) targets LIBTYPE=DYNAMIC
 
 exec: $(EXEC)
 
