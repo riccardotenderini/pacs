@@ -1,1 +1,0 @@
-/usr/bin/c++    -std=c++0x --coverage -g -O0    CMakeFiles/integer-list.dir/integer-list.cpp.o  -o integer-list -rdynamic 
