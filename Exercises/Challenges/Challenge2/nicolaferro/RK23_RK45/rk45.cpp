@@ -1,6 +1,7 @@
 #include "rk45.hpp"
 #include <cmath>
 #include <algorithm> // for max
+#include<iostream>
 namespace ODE
 {
   // f(t,y)
@@ -105,19 +106,14 @@ namespace ODE
 	//adjust h if needed for the last step
 	if (time + h > T) h = T-time;
 	newy = rk45_step(dy,y,time,h,localError);
-	while (localError > c1*errorPerTimeStep && count<maxReduction)
+	while (h> h_min && localError > c1*errorPerTimeStep)
 	  {
-	    if( h> h_min)
-	      {
-		// half time step
-		h /=2;
-		errorPerTimeStep /=2;
-		++count;
-		newy = rk45_step(dy,y,time,h,localError);
-	      }
-	    else status=3;
+	    // half time step
+	    h /=2;
+	    errorPerTimeStep /=2;
+	    newy = rk45_step(dy,y,time,h,localError);
+	    
 	  }
-	if (count>=maxReduction)status=1;
 	count=0;
 	//! advance
 	y = newy;

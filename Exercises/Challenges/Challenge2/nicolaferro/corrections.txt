@@ -1,0 +1,19 @@
+- The correct idea would have been to have a single driver for the
+  adaptive schemes, capable of using rk45 or rk23 step in
+  alternative. You have a lot of code duplicated in rk45() and
+  rk23(). You could have created a rk_adaptive receiving the specific
+  method as argument. Also the main() would have been simpler.
+
+- Why not create a struct to gather all parameters? It makes the code
+  more compact. The parameters could have been read from a file.
+
+  struct rkParam
+  {
+  double t0;
+  double T;
+  double y0;
+  ......
+  }
+
+
+

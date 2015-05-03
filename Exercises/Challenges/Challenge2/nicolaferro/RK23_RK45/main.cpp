@@ -25,10 +25,10 @@ int main()
   using namespace std;
   using namespace ODE;
 
-  //auto fun = [](double const & t, double const & y){return -10*y;};
+  //auto fun = [](double const & t, double const & y){return 10*y;};
   auto fun = [](double const & t, double const & y){return -std::sin(t);};
 
-  //auto exact=[](double const &t){return std::exp(-10.*t);}
+  //auto exact=[](double const &t){return std::exp(10.*t);};
   auto exact=[](double const &t){return std::cos(t);};
 
   double t0=0;
