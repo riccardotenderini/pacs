@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <ctime>
+#include <type_traits>
 /*!
   @file MyMat0.hpp
   @author Luca Formaggia
@@ -33,13 +34,19 @@ namespace LinearAlgebra{
    */
   typedef std::vector<double>::size_type size_type;
 
+  //! A Helper class that allow to distinguish row and column ordering
+  /*! It ia a nice trick by Alexandrescu. I convert an enumerator to a type
+    so that I can apply overloading
+  */
+  template<StoragePolicySwitch storagePolicy>
+  struct storagePolicyType{};
   //! A simple matrix class of double
   /*!
    * It stores a matrix of double entries, allowing different type of
    * storage through an internal policy. The policy is implemented via
    * a pointer to function selected at construction time.
    */
-  template<StoragePolicySwitch storagePolicy=ROWMAJOR>
+  template<class T=double, StoragePolicySwitch storagePolicy=ROWMAJOR>
   class MyMat0{
   private:
     size_type nr,nc;
@@ -51,12 +58,44 @@ namespace LinearAlgebra{
      * In alternative I might have used a smart pointer, in particular
      * std::unique_ptr<double>
      */
-    std::vector<double> data;
+    std::vector<T> data;
       //! The general template for the policies. Only declaration since I will always use full specializations
     //    template<StoragePolicySwitch thePolicy> size_type M_getIndex(size_type const & i, size_type const & j) const;
+    /*! This does not work since partial specialization is not possible
+      size_type getIndex(size_type const & i, size_type const & j) const;
+
+      I use enable_if to select the correct one 
+    */
     //! Function returning index according to ordering
-    size_type getIndex(size_type const & i, size_type const & j) const;
+    /*! I am using the trick of the book of Alexandrescu
+      It can be done also with enable_if:
+      
+      \code{.cpp}
+      size_type getIndex(size_type const & i, size_type const & j,
+      typename std::enable_if<storagePolicy==ROWMAJOR>::type* = nullptr) const;
+
+      size_type getIndex(size_type const & i, size_type const & j,
+      typename std::enable_if<storagePolicy==COLUMNMAJOR>::type* = nullptr) const;
+      \endcode
+      
+      I do not need in this case to define getIndex with only two arguments
+    */
+    size_type getIndex(size_type const & i, size_type const & j, storagePolicyType<ROWMAJOR>) const
+    {
+      return i + j*nr;
+    }
+    size_type getIndex(size_type const & i, size_type const & j, storagePolicyType<COLUMNMAJOR>) const
+    {
+      return j + i*nc;
+    }
+    //! The actual function returning the index
+    size_type getIndex(size_type const & i, size_type const & j) const
+    {
+      return getIndex(i,j,storagePolicyType<storagePolicy>());
+    }
   public:
+    //! Returns the type of the stored values
+    typedef T value_type;
     //! It builds a matrix with n rows and m columns.
     /*!
       Since we give default value for the parameters, this
@@ -68,13 +107,27 @@ namespace LinearAlgebra{
       @param m number of columns.
       @param sPolicy the sorage policy (default rowmajor).
      */
-    explicit MyMat0(size_type n=0, size_type m=0): nr(n), nc(m), data(n*m,0.){};
+    explicit MyMat0(size_type n=0, size_type m=0): nr(n), nc(m), data(n*m)
+    {
+      // Set to zero if arithmetic
+      fillZero();
+    };
     //! Default copy constructor is ok
     MyMat0(const MyMat0&)=default;
     //! Default move constructor is ok
     MyMat0(MyMat0&&)=default;
     //! Default move assign is ok
     MyMat0& operator=(MyMat0&&)=default;
+    //! Fills of zero. Enabled only for arithmetic types
+    template <class T1=T>
+    void fillZero(typename std::enable_if<(std::is_arithmetic<T1>::value)>::type* =0)
+    {
+	for (auto & i : data) i=T1(0);
+    }
+    template <class T1=T>
+    void fillZero(typename std::enable_if<(!std::is_arithmetic<T1>::value)>::type* =0)
+    {
+    }
     //! Resizing the matrix
     /*!
      * The storage policy cannot be changed;
@@ -90,7 +143,7 @@ namespace LinearAlgebra{
     /*!
       It allows a=m(1,1) on constant matrix m
      */
-    double operator () (const size_type i, const size_type j) const
+    T operator () (const size_type i, const size_type j) const
     {
     	return data[getIndex(i,j)];
     }
@@ -98,7 +151,7 @@ namespace LinearAlgebra{
     /*!
       It allows m(1,1)=1 on non-constant matrix m
      */
-    double & operator () (const size_type i, const size_type j)
+    T & operator () (const size_type i, const size_type j)
     {
     	return data[getIndex(i,j)];
     }
@@ -108,17 +161,26 @@ namespace LinearAlgebra{
       return storagePolicy;
     }
     //! Computes \f$ ||A||_\infty \f$
-    double normInf() const;
+    /*!
+      This method makes sense only for arithmetic types. To enable it only for those
+      type I use a trick that involved enable_if. But to meke it work I need
+      to make the method a template. But I give a default value, so in practice i will use
+      it as a non-template method
+     */
+    template <class T1=T>
+    typename std::enable_if<std::is_arithmetic<T1>::value, T1>::type normInf() const;
     //! Computes \f$ ||A||_1 \f$
-    double norm1() const;
+    template <class T1=T>
+    typename std::enable_if<std::is_arithmetic<T1>::value, T1>::type norm1() const;
     //! Computes Frobenious norm
-    double normF() const;
+    template <class T1=T>
+    typename std::enable_if<std::is_arithmetic<T1>::value, T1>::type normF() const;
     //! An example of matrix times vector
     /*!
      * It checks for consistency: the size of the vector must be equal
      * to the number of columns
      */
-    void vecMultiply(const std::vector<double> &v, std::vector<double> & res) const;
+    void vecMultiply(const std::vector<T> &v, std::vector<T> & res) const;
 
     //! Generates a random matrix
     /*!
@@ -127,8 +189,10 @@ namespace LinearAlgebra{
      * @param seed Sets the seed value to initiate the pseudorandom generator.
      * If it is equal to 0 (default) the seed is set using the current time.
      * Otherwise the given value is used.
+     * ONly for arithmetic types
      */
-    void fillRandom(unsigned int seed=0);
+    template <class T1=T>
+    typename std::enable_if<std::is_arithmetic<T1>::value, void>::type  fillRandom(unsigned int seed=0);
     //! It shows matrix content
     /*!
      *  It pretty prints the matrix
@@ -143,92 +207,104 @@ namespace LinearAlgebra{
    * @param v The vector (with size equal to the number of columns)
    * @return The result in a vector of the size = to the number of row
    */
-  template<StoragePolicySwitch storagePolicy>
-  std::vector<double> operator * (MyMat0<storagePolicy> const & m,std::vector<double> const & v);
+  template<class T, StoragePolicySwitch storagePolicy>
+  std::vector<T> operator * (MyMat0<T, storagePolicy> const & m,std::vector<T> const & v);
 
   //                 DEFINITIONS
   
+  /*  THIS  DOES NOT WORK: PARTIAL SPECIALIZATION OF METHODS IS NOT ALLOWED */
   //! Specialization for row major ordering
   /*!
    Note: important to declare it inline. Otherwise it should go to a cpp file! And it will be less
    efficient!
   */
-  template<>
-  inline size_type MyMat0<ROWMAJOR>::getIndex(size_type const & i, size_type const & j) const
+  /*
+    template<class T>
+  inline size_type MyMat0<T,ROWMAJOR>::getIndex(size_type const & i, size_type const & j) const
   {
-    return i + j*nr;;
-  }
+    return i + j*nr;
+    }*/
   //! Specialization for column major ordering
   /*!
     Note: important to declare it inline. Otherwise it should go to a cpp file! And it will be less
     efficient!
   */
-  template<>
-  inline size_type MyMat0<COLUMNMAJOR>::getIndex(size_type const & i, size_type const & j) const
+  /*  template<class T>
+  inline size_type MyMat0<T,COLUMNMAJOR>::getIndex(size_type const & i, size_type const & j) const
   {
-    return j + i*nc;
+  return j + i*nc;
   }
-  
-  template<StoragePolicySwitch storagePolicy>
-  void MyMat0<storagePolicy>::resize(size_type const n, size_type const m)
+  */
+
+  /* Selection by enable_if */
+  template<class T, StoragePolicySwitch storagePolicy>
+  void MyMat0<T,storagePolicy>::resize(size_type const n, size_type const m)
   {
     if(n*m != nc*nr)
       {
 	// clear data storage
 	data.resize(n*m);
 	data.shrink_to_fit();
-	  for (auto& i: data)i=0.0;
+	fillZero();
       }
     //! fix number of rows and column
     nr=n;
     nc=m;
   }
   
-  template<StoragePolicySwitch storagePolicy>
-  double MyMat0<storagePolicy>::normInf() const{
+  template<class T, StoragePolicySwitch storagePolicy>
+  template<class T1>
+  typename std::enable_if<std::is_arithmetic<T1>::value, T1>::type 
+  MyMat0<T,storagePolicy>::normInf() const
+  {
     if(nr*nc==0)return 0;
-    double vmax(0.0);
+    T vmax(0.0);
     
     for (size_type i=0;i<nr;++i){
-      double vsum=0;
+      T vsum=0;
       for (size_type j=0;j<nc;++j) vsum+=data[getIndex(i,j)];
       vmax=std::max(vsum,vmax);
     }
     return vmax;
   }
   
-  template<StoragePolicySwitch storagePolicy>
-  double MyMat0<storagePolicy>::norm1() const{
+  template<class T, StoragePolicySwitch storagePolicy>
+  template<class T1>
+  typename std::enable_if<std::is_arithmetic<T1>::value, T1>::type 
+  MyMat0<T,storagePolicy>::norm1() const{
     if(nr*nc==0)return 0;
-    double vmax(0);
+    T vmax(0);
     for (size_type j=0;j<nc;++j){
-      double vsum=0;
+      T vsum=0;
       for (size_type i=0;i<nr;++i) vsum+=data[getIndex(i,j)];
       vmax=std::max(vsum,vmax);
     }
     return vmax;
   }
   
-  template<StoragePolicySwitch storagePolicy>
-  double MyMat0<storagePolicy>::normF() const{
+
+  template<class T, StoragePolicySwitch storagePolicy>
+  template<class T1>
+  typename std::enable_if<std::is_arithmetic<T1>::value, T1>::type 
+  MyMat0<T,storagePolicy>::normF() const{
     if(nr*nc==0)return 0;
-    double vsum=0;
+    T vsum=0;
     for (auto const x: data) vsum+=x*x;
     return std::sqrt(vsum);
   }
   
   
-  template<StoragePolicySwitch storagePolicy>
-  void MyMat0<storagePolicy>::vecMultiply(const std::vector<double> &v, std::vector<double> & res) const
+  template<class T, StoragePolicySwitch storagePolicy>
+  void MyMat0<T, storagePolicy>::vecMultiply(const std::vector<T> &v, std::vector<T> & res) const
   {
     if(v.size() != nc)
       {
 	std::cerr<<" Vector must have the right size"<<std::endl;
 	std::exit(1);
       }
-    res.resize(nr,0);
+    res.resize(nr,T(0));
     // for efficiency I use two different algorithms
-
+    
     switch(storagePolicy)
       {
       case ROWMAJOR:
@@ -241,20 +317,22 @@ namespace LinearAlgebra{
 	break;
       }
   }
-    
-    template<StoragePolicySwitch storagePolicy>
-    void  MyMat0<storagePolicy>:: fillRandom(unsigned int seed)
-    {
-      if (seed==0) seed=std::time(0);
-      double rmax=static_cast<double>(RAND_MAX+2.0);
+  
+  template<class T, StoragePolicySwitch storagePolicy>
+  template<class T1>
+  typename std::enable_if<std::is_arithmetic<T1>::value, void>::type 
+  MyMat0<T, storagePolicy>:: fillRandom(unsigned int seed)
+  {
+    if (seed==0) seed=std::time(0);
+    double rmax=static_cast<double>(RAND_MAX+2.0);
     std::srand(seed);
     if(nr*nc>0)
-      for (auto& x: data) x=static_cast<double>(std::rand()+1)/rmax;
+      for (auto& x: data) x=static_cast<T>(std::rand()+1)/rmax;
   }
   
   
-  template<StoragePolicySwitch storagePolicy>
-  void MyMat0<storagePolicy>::showMe(std::ostream & out) const{
+  template<class T, StoragePolicySwitch storagePolicy>
+  void MyMat0<T, storagePolicy>::showMe(std::ostream & out) const{
     out<<"[";
     for (size_type i=0;i<nr;++i){
       for (size_type j=0;j<nc-1;++j) out<< this->operator()(i,j)<<", ";
@@ -266,10 +344,10 @@ namespace LinearAlgebra{
     }
   }
 
-  template<StoragePolicySwitch storagePolicy>
-  std::vector<double> operator * (MyMat0<storagePolicy> const & m,std::vector<double> const & v)
+  template<class T, StoragePolicySwitch storagePolicy>
+  std::vector<T> operator * (MyMat0<T, storagePolicy> const & m,std::vector<T> const & v)
   {
-    std::vector<double> tmp;
+    std::vector<T> tmp;
     m.vecMultiply(v,tmp);
     return tmp;
   }
