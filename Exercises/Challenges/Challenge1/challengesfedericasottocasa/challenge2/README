@@ -1,0 +1,2 @@
+The structure of edges and triangles is the same as in challenge1.
+Here I want the boundary edges so I use the operation insert that return an interesting pair. If there is an equal element, the boolean of the pair is false and the iterator of the pair points to the element already in the set. Using erase I can remove the element that I wanted to insert twice(only the internal set are in this condition).

@@ -1,0 +1,57 @@
+Errors
+1) The header files must have an header guard. Otherwise they may be included twice:
+
+#ifndef  ACOMPLICATEDSTRING
+#define  ACOMPLICATEDSTRING
+..... content of your header file
+#endif
+
+2) Function definitions (a part inline functions) must go in a cpp (source) file. In the header (hpp) file you put only the declarations.
+
+hpp file
+    double fun(double x);
+
+cpp file
+    double fun(double x)
+    {
+    ..... implementation
+    }
+
+
+
+
+
+Improvements
+
+1) If possible initialize member data using the initialization list. 
+
+struct Edge
+{
+  Edge(const unsigned & a, const unsigned & b): pointId{a,b}{}
+...
+}
+
+
+2) The implementation is unnecessarily complicated. It was sufficient to create a comparison op that ignores orientation!
+
+Moreover, use break to exit a for loop
+
+	  		it = result.find(Triangle(get<2>(i.pointId),get<1>(i.pointId),get<0>(i.pointId)));
+				if(it != result.end()){
+				result.erase(it);
+				break;
+				}
+
+3) I do not understand what you want to do with
+
+	for (unsigned i=0; i < cont.size(); i++){
+				auto it = alledges.find(Edge(cont[i],cont[i]));
+				alledges.erase(it);		
+	}		
+			
+
+ do you assume to have edges formed by just one node???
+
+Moreover (but it is not so important) you can simplify in
+
+	for (unsigned i=0; i < cont.size(); i++) alledges.erase(find(Edge(cont[i],cont[i])));

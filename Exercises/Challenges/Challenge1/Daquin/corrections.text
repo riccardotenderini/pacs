@@ -1,0 +1,63 @@
+Errors:
+
+A makefile is missing. Try to create a Makefile so compilation is easier.
+
+It is not really an error, but try in the future to organize the code better, with source and header files, instead of putting everyting in the main file! IN this way you can reuse the definition of edges, points, etc, instead of repeating them every time!
+
+
+The way to find duplicated edges in order to find boundary edges works, but it is complicated. At lecture I told a easier way of doing it. I will explain it to you again!
+
+
+
+SUggestions:
+
+COstructors: It is better to initialize member variables in the initialization list, not in the body of the constructor.
+
+Example: your code
+
+class Pt2d {
+public:
+  double x;
+  double y;
+  int id;
+  Pt2d(int _id=0, double a = 0, double b = 0) {
+    id = _id;
+    x  = a;
+    y  = b;
+  };
+};
+
+better code:
+
+class Pt2d {
+public:
+  double x;
+  double y;
+  int id;
+  Pt2d(int _id=0, double a = 0, double b = 0) :id(_id), x(a), y(b) {};
+};
+
+In C++11 you may also write 
+
+  Pt2d(int _id=0, double a = 0, double b = 0) :id{_id}, x{a}, y{b} {};
+
+using the {} syntax.
+
+
+----
+
+Try in the future to organize the classes better. If you want to use object oriented programming the data is usually made private. This gives extra flexibility (at the price of having to write the methods to access the data).
+
+Example:
+
+class Pt2d {
+private:
+  double x;
+  double y;
+  int id;
+public:
+  Pt2d(int _id=0, double a = 0, double b = 0) :id(_id), x(a), y(b) {};
+  int getId()const{ retirn _id;};
+...
+  and so on...
+};

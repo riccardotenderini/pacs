@@ -1,0 +1,35 @@
+1- Functions
+
+std::set<Edge, notOr> getBoundaries_OR(std::vector<Triangle> const & mesh);
+
+
+and 
+
+std::set<Edge, notOr> getBoundaries_NOR(std::vector<Triangle> const & mesh);
+
+
+are identical( a part the name).
+
+The same for 
+
+std::set<Triangle, notOr> getExtFacets_NOR(std::vector<Tetrahedron> const & mesh);
+
+
+and
+
+td::set<Triangle, notOr> getExtFacets_OR(std::vector<Tetrahedron> const & mesh);
+
+
+
+2- Why not use "toupper"?
+
+if(std::toupper(answ) == 'Y')
+
+
+3- Nice the idea of using sort for the ordering relation in tha case of triangles. Even if for short vectors it is more efficient do it "the hard way".
+
+
+
+
+
+
