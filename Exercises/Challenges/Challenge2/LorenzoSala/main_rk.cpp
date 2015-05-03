@@ -1,11 +1,16 @@
 #include "rk23.hpp"
 #include "rk45.hpp"
 #include "muParserInterface.hpp"
-// #include "muParserInterface.cpp"
 #include <iostream>
 #include <fstream>
 #include <cmath>
 #include <string>
+
+void printAndExit()
+{
+  std::cout<<"Something wrong with input"<<std::endl;
+  std::exit(1);
+}
 
 std::vector<std::pair<double,double>> 
     rk(std::function<double (double const &, double const &)> const & fun,
@@ -24,32 +29,27 @@ int main()
 {
   using namespace std;
   using namespace ODE;
-  
-  // using namespace MuParserInterface;
+  using namespace MuParserInterface;
 
   string expr;
-  // muParserInterface p;
-
+  muParserInterface par;
   
-  double x,y,t;	
-  while (true)
-    {
-    cout<< "Give me an expression possibly contaning variables t, x and y"<<std::endl;
-    cout<< "(type quit to finish)"<<std::endl;
-    while(expr.size()==0) // to filter out extra carriage returns
-      {
+  
+  cout << "Give me an expression possibly contaning variables t and y"<<std::endl;
+  while(expr.size()==0) // to filter out extra carriage returns
+     {
 	getline(cin,expr);
-	if(!cin.good()) break;//printAndExit();
-      }
-    if(!cin.good()) break;//printAndExit();
-    cout<<"You have typed:"<<expr<<endl;
-    if(expr=="quit") exit(0);
-  }
-  
-  // p.set_expression(expr);
-  
-  auto fun = [](double const & t, double const & y){return -10*y;};
+	if(!cin.good()) printAndExit();
+     }
+  if(!cin.good()) printAndExit();
+  cout<<"You have typed:"<<expr<<endl;
+  par.set_expression(expr);
+
+  auto fun = [&par](double const & t, double const & y){array<double,2> coor = {{0,y}}; return par(t,coor.data());}; 
+  // auto fun = [](double const & t, double const & y){return -10*y;};
   // auto fun = [](double const & t, double const & y){return -std::sin(t);};
+  // cout << fun << endl;
+  
   double t0=0;
   double y0=1;
   double T=100;
@@ -90,18 +90,38 @@ int main()
   for (auto v : result)
     file<<v.first<<" "<<v.second<<std::endl;
   file.close();
+  
+  char p;
+  cout << "Do you know the exact solution? [Y for yes, other key for no]" << endl;
+  cin >> p;
+  if( p == 'Y'){
+	cout<< "Give me an expression of the exact solution in t"<<std::endl;
+        expr.clear();
+	while(expr.size()==0) // to filter out extra carriage returns
+	{
+		getline(cin,expr);
+		if(!cin.good()) printAndExit();
+	}
+	if(!cin.good()) printAndExit();
+	cout<<"You have typed:"<<expr<<endl;
+	  
+	par.set_expression(expr);
+	auto exact = [&par](double const & t){array<double,2> coor = {{0,0}}; return par(t,coor.data());}; 
+	  
+  
+  	// Only if I know the exact solution
+  	// auto exact=[](double const &t){return std::exp(-10.*t);};
+  	// auto exact=[](double const &t){return std::cos(t);};
 
-  // Only if I know the exact solution
-  auto exact=[](double const &t){return std::exp(-10.*t);};
-  // auto exact=[](double const &t){return std::cos(t);};
-  double max_error(0);
-  for (auto i : result)
-    max_error=std::max(max_error,std::abs(exact(i.first)-i.second));
-  std::cout.setf(std::ios::scientific);
-  std::cout<<"Max error "<<max_error<<" Desired max error "<<errorDesired;
-  std::cout<<std::endl;
-  if(max_error > errorDesired)
-	std::cout << "Not a good convergence, try with optimal timestep [OTS]" << std::endl;
+  	double max_error(0);
+  	for (auto i : result)
+    		max_error=std::max(max_error,std::abs(exact(i.first)-i.second));
+  	std::cout.setf(std::ios::scientific);
+  	std::cout<<"Max error "<<max_error<<" Desired max error "<<errorDesired;
+  	std::cout<<std::endl;
+  	if(max_error > errorDesired)
+		std::cout << "Not a good convergence, try with optimal timestep [OTS]" << std::endl;
+  }
 
   return 0;
 }

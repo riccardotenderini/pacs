@@ -103,7 +103,7 @@ namespace ODE
 		if(flag.timestep == 0) // half time step
 			h /=2;
 		else if(flag.timestep == 1){ // optimal step
-			s = std::pow(0.84*(errorPerTimeStep*h/(2*localError)),1./4.);
+			s = std::sqrt(0.84*(errorPerTimeStep*h/(2*localError)));
 			h *= s;
 		}
 		errorPerTimeStep /=2;		

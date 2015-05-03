@@ -25,13 +25,13 @@ export DEBUG=yes
 #CC=$(CXX)# I am not using C compiler here, simpler to set it equal to c++
 STANDARD=c++11
 #
-LIBNAME = rk45
+LIBNAME=rk45
 DYNAMIC_LIBFILE=lib$(LIBNAME).so 
 STATIC_LIBFILE=lib$(LIBNAME).a
 
 include $(MAKEFILEH_DIR)/Makefile.inc
 LIBRARIES+=-L. -l$(LIBNAME)
-LIBRARIES+=-L./home/pacs_student/Desktop/pacs/Extras/muParser/lib
+LIBRARIES+=-L/home/pacs_student/Desktop/pacs/Extras/muParser/lib -lmuparser
 LDLIBS+=$(LIBRARIES)
 INCLUDES=-I. 
 
