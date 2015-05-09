@@ -1,0 +1,15 @@
+- The idea of a defining a type for the function defining the type of time stepping is excellent.
+
+- The program cold be neater by defining stucts to contain related data for instance
+ 
+ struct rkOptions{
+     unsigned int maxSteps;
+     doube desiredError....
+     };
+
+etc. This way one avoids to have a lot of function parameters! 
+
+- There is nothing wrong in using char pointers	like char* scheme  in function rk, yet remember that std::string is more flexible.
+
+
+Well done.
