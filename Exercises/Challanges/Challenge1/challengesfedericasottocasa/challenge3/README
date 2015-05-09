@@ -1,0 +1,4 @@
+Challenge3: I deal with a 3d mesh made of tetrahedron. 
+I have a function (faces) that returns the faces of the mesh without repetition and a function (boundaryfaces) that returns the boundary faces of my mesh.
+
+In this 3d contest I have an addictional function (fromTetratoTriangle) that returns a vector of triangles starting from the mesh (obviously in this vector there are repetitions, but it is the starting point to make the set without repetition).
