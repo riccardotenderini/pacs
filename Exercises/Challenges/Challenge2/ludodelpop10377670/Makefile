@@ -103,7 +103,7 @@ targets: library exec
 static:
 	$(MAKE) targets
 dynamic:
-	$(MAKE) targets
+	$(MAKE) librk45.so targets LIBTYPE=DYNAMIC
 
 exec: $(EXEC)
 
