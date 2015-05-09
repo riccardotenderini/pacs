@@ -1,0 +1,45 @@
+-Good the idea of passing arguments to the main. But in this case it is nice to have an help.
+
+-Why not to put the options in a file?
+
+-If would have been better to have a common driver for both rk23 and
+ rk45 and then pass the function operation on the single step as a
+ policy, for instance using std::function and group the options on a struct
+
+struct rkOptions{
+   double y0, 
+   double t0, 
+   double hinint, 
+   double desiredError,
+}
+   
+
+
+
+  using rkstep=std::function<std::function<double (double const &, double const &)>,double const &, double const &, double const &, double const &>
+  
+  std::vector<std::pair<double,double>> 
+    rk(rkstep & myStep, std::function<double (double const &, double const &)> const & dy, ...)
+
+and pass the step. The only thing to tae care of is that c2 has to
+change according to the step, put it might have been passed as
+argument.
+
+- Grouping the options in structs would have made the code neater:
+
+struct rkOptions{
+   double y0, 
+   double t0, 
+   double hinint, 
+   double desiredError
+};
+
+struct timeAdvenceOptions{
+  {
+    unsigned int MaxIter;
+    double c1;
+    double c2;
+    ...
+    }	   
+
+Anyway, you have done a reasonable work.

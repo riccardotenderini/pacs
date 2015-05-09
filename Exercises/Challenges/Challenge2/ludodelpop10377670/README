@@ -1,0 +1,14 @@
+Function for Runge Kutta 45 or 23 adaptive time integration.
+
+For scalar ODE of the form dy/dt = f(y,t)
+
+make static makes the static library
+make dynamic the shared libary
+make installs installs in PACS_ROOT/include and PACS_ROOT/lib
+
+make will also crete the executable, you have to choose the step methods in command line:
+./main_rk rk23
+./main_rk rk45 
+
+
+bash plot23.sh and plot45.sh use gnuplot to shot the result.
