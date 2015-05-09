@@ -88,11 +88,11 @@ namespace LinearAlgebra{
       
       I do not need in this case to define getIndex with only two arguments
     */
-    size_type getIndex(size_type const & i, size_type const & j, Helpers::storagePolicyType<ROWMAJOR>) const
+    size_type getIndex(size_type const & i, size_type const & j, Helpers::storagePolicyType<COLUMNMAJOR>) const
     {
       return i + j*nr;
     }
-    size_type getIndex(size_type const & i, size_type const & j, Helpers::storagePolicyType<COLUMNMAJOR>) const
+    size_type getIndex(size_type const & i, size_type const & j, Helpers::storagePolicyType<ROWMAJOR>) const
     {
       return j + i*nc;
     }
