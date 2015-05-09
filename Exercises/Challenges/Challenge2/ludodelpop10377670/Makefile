@@ -46,6 +46,7 @@ endif
 ifeq ($(DEBUG),yes)
   OPTFLAGS=-g
   LDFLAGS+=-Wl,-rpath=.# If debug we use the local dynamic libraries
+  LDFLAGS+=-Wl,-rpath=/home/pacs_student/Desktop/pacs/Extras/muParser/lib/
 else
   OPTFLAGS=-O3
   CPPFLAGS+=-DNDEBUG
