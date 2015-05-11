@@ -1,0 +1,19 @@
+**COMMENTS**
+
+-Using standard exceptions instead of calling exit is better.
+
+- No need to include muparser.h in the main. Is already included in muParserFunction.hpp. It is not an error, but it is misleading: it indicates that the main() is using something declared by muparser, while it is not.
+
+- Why are you including cstring?  Not needed.
+
+- Good reading data from file and using getpot for parsing. 
+
+- Good the switch between reading from file and reading from terminal.
+
+- if (k_met>0 and k_met<3) ok=true;  ->  ok=(k_met>0 and k_met<3)  (SIMPLER!) By the way, nice the use of the keyword and, introduced in c++11
+
+- Nice the idea of printing the options
+
+**ERRORS**
+
+-No relevant errors.

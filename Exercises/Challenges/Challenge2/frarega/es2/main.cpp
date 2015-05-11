@@ -1,13 +1,13 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
-#include <cstring>
+//#include <cstring>
 #include <iostream>
 #include <string>
-#include <cstring>
+//#include <cstring>
 #include "GetPot"
 #include "rk.hpp"
-#include "muParser.h"
+//#include "muParser.h"
 #include "muParserFunction.hpp"
 
 int throwInputException()
@@ -15,6 +15,7 @@ int throwInputException()
 	std::cout<<"Something went wrong while typing the function. The program will exit."<<std::endl;
 	std::exit(1);
 }
+
 
 int main(int argc, char** argv)
 {
