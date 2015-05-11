@@ -35,7 +35,7 @@ OBJS = $(SRCS:.cpp=.o)
 LIB_OBJS=$(filter-out main%.o test%.o,$(OBJS))
 # get all headers in the working directory
 HEADERS=$(wildcard *.hpp)
-HEADERS+=GetPot
+#HEADERS+=GetPot
 #
 exe_sources=$(filter main%.cpp,$(SRCS))
 EXEC=$(exe_sources:.cpp=)
@@ -100,7 +100,7 @@ dynamic:
 	make $(DYNAMIC_LIBFILE) LIBTYPE=DYNAMIC
 
 $(DYNAMIC_LIBFILE): $(LIB_OBJS)
-	$(CXX) -shared $(LIB_OBJS) -o $(DYNAMIC_LIBFILE)
+	$(CXX) -shared $(LIB_OBJS) $(LDLIBS) -o $(DYNAMIC_LIBFILE)
 
 $(DEPEND): $(SRCS)
 	-\rm $(DEPEND)
