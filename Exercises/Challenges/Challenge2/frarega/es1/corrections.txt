@@ -1,0 +1,26 @@
+**COMMENTS**
+
+- Good the idea of having a std::function for the rk step
+
+- As a suggestion, when you have a lot of parameters to be passed to a function try to group them in structs, it makes the code more readable.
+
+- Good the idea of passing arguments to the main. I suggest however to use GetPot to parse the argument, it is easier and less prone to errors.
+
+- As another suggestion, why not pass also the other data via options to the main? Even nicer: if the option is not given it is asked!
+
+  k_met = gp.find("k_met",-1)
+  if (k_met==-1)
+   { 
+     bool ok=false;
+	while (!ok)
+	{
+		cout<<"Which method do you want to be used? (type the corresponding number)"<<endl;
+		cout<<"1. Runge-Kutta23 (Bogacki–Shampine method)"<<endl;
+		cout<<"2. Runge-Kutta45 (Runge–Kutta–Fehlberg method)"<<endl;
+		cin>>k_met;
+		.....
+
+
+**ERRORS**
+
+  No errors
