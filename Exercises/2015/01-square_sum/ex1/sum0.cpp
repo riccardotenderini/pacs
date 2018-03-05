@@ -8,6 +8,7 @@ between two user-defined values ooooook?
 
 int main() {
     int n, m;
+    int aa=0;
     std::cout << "Insert 2 integers:" << std::endl;
     std::cin >> n >> m;
 
