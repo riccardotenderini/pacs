@@ -1,7 +1,7 @@
 /*! \file sum0.cpp
 
 \brief This program aims at evaluating the sum of the powers of integers taken
-between two user-defined values
+between two user-defined values ooooook?
 */
 
 #include <iostream>
